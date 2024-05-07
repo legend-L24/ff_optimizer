@@ -1,0 +1,34 @@
+log             log.MIL-160-Al append
+units           real
+atom_style      full
+boundary        p p p
+
+pair_style      lj/cut/coul/long 1.000
+bond_style      harmonic
+angle_style     cosine/periodic
+dihedral_style  harmonic
+improper_style  fourier
+kspace_style    ewald 0.000001
+
+special_bonds   lj/coul 0.0 0.0 1.0
+dielectric      1.0
+pair_modify     tail yes mix arithmetic
+box tilt        large
+read_data       data.MIL-160-Al
+
+#### Atom Groupings ####
+group           fram     id   1:256
+#### END Atom Groupings ####
+
+variable        dt         equal 1.00
+variable        tdamp      equal 100*${dt}
+fix             1 fram langevin 298.00 298.00 ${tdamp} 921674
+fix             2 fram nve
+thermo          0
+run             200000
+unfix           1
+unfix           2
+fix             3 fram nvt temp 298.00 298.00 ${tdamp}
+thermo          1
+run             200000
+unfix           3

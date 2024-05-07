@@ -1,0 +1,147 @@
+<ForceField>
+  <AtomTypes>
+    <Type class="Al" element="Al" mass="0.0" name="Al" />
+    <Type class="C" element="C" mass="0.0" name="C" />
+    <Type class="H" element="H" mass="0.0" name="H" />
+    <Type class="O" element="O" mass="0.0" name="O" />
+    <Type class="C1_co2" element="C" mass="12.010" name="C_co2" />
+    <Type class="O1_co2" element="O" mass="15.999" name="O_co2" />
+    </AtomTypes>
+  <Residues>
+    <Residue name="MOL">
+      <Atom name="In1" type="In" charge="1.56195" />
+      <Atom name="In2" type="In" charge="1.56241" />
+      <Atom name="In3" type="In" charge="1.56068" />
+      <Atom name="In4" type="In" charge="1.56291" />
+      <Atom name="In5" type="In" charge="1.56922" />
+      <Atom name="In6" type="In" charge="1.56922" />
+      <Atom name="H7" type="H" charge="0.12053" />
+      <Atom name="H8" type="H" charge="0.12784" />
+      <Atom name="H9" type="H" charge="0.12768" />
+      <Atom name="H10" type="H" charge="0.12133" />
+      <Atom name="H11" type="H" charge="0.12838" />
+      <Atom name="H12" type="H" charge="0.11845" />
+      <Atom name="H13" type="H" charge="0.12807" />
+      <Atom name="H14" type="H" charge="0.12028" />
+      <Atom name="H15" type="H" charge="0.11979" />
+      <Atom name="H16" type="H" charge="0.12100" />
+      <Atom name="H17" type="H" charge="0.12788" />
+      <Atom name="H18" type="H" charge="0.12762" />
+      <Atom name="H19" type="H" charge="0.12129" />
+      <Atom name="H20" type="H" charge="0.12848" />
+      <Atom name="H21" type="H" charge="0.11919" />
+      <Atom name="H22" type="H" charge="0.12064" />
+      <Atom name="H23" type="H" charge="0.12753" />
+      <Atom name="H24" type="H" charge="0.12754" />
+      <Atom name="H25" type="H" charge="0.12117" />
+      <Atom name="H26" type="H" charge="0.12660" />
+      <Atom name="H27" type="H" charge="0.12806" />
+      <Atom name="H28" type="H" charge="0.12869" />
+      <Atom name="H29" type="H" charge="0.12062" />
+      <Atom name="H30" type="H" charge="0.11977" />
+      <Atom name="H31" type="H" charge="0.41077" />
+      <Atom name="H32" type="H" charge="0.41049" />
+      <Atom name="H33" type="H" charge="0.41005" />
+      <Atom name="H34" type="H" charge="0.40992" />
+      <Atom name="H35" type="H" charge="0.40569" />
+      <Atom name="H36" type="H" charge="0.40730" />
+      <Atom name="C37" type="C" charge="-0.09703" />
+      <Atom name="C38" type="C" charge="-0.09750" />
+      <Atom name="C39" type="C" charge="-0.09691" />
+      <Atom name="C40" type="C" charge="-0.09679" />
+      <Atom name="C41" type="C" charge="-0.09719" />
+      <Atom name="C42" type="C" charge="-0.09620" />
+      <Atom name="C43" type="C" charge="-0.09545" />
+      <Atom name="C44" type="C" charge="-0.09689" />
+      <Atom name="C45" type="C" charge="-0.09705" />
+      <Atom name="C46" type="C" charge="-0.09713" />
+      <Atom name="C47" type="C" charge="-0.09737" />
+      <Atom name="C48" type="C" charge="-0.09635" />
+      <Atom name="C49" type="C" charge="-0.09667" />
+      <Atom name="C50" type="C" charge="-0.09682" />
+      <Atom name="C51" type="C" charge="-0.09808" />
+      <Atom name="C52" type="C" charge="-0.09705" />
+      <Atom name="C53" type="C" charge="-0.09716" />
+      <Atom name="C54" type="C" charge="-0.09713" />
+      <Atom name="C55" type="C" charge="-0.09791" />
+      <Atom name="C56" type="C" charge="-0.09609" />
+      <Atom name="C57" type="C" charge="-0.09670" />
+      <Atom name="C58" type="C" charge="-0.09620" />
+      <Atom name="C59" type="C" charge="-0.09591" />
+      <Atom name="C60" type="C" charge="-0.09720" />
+      <Atom name="C61" type="C" charge="0.61692" />
+      <Atom name="C62" type="C" charge="-0.03515" />
+      <Atom name="C63" type="C" charge="0.60675" />
+      <Atom name="C64" type="C" charge="-0.03073" />
+      <Atom name="C65" type="C" charge="-0.03358" />
+      <Atom name="C66" type="C" charge="0.60811" />
+      <Atom name="C67" type="C" charge="0.61664" />
+      <Atom name="C68" type="C" charge="-0.03179" />
+      <Atom name="C69" type="C" charge="0.60504" />
+      <Atom name="C70" type="C" charge="-0.02638" />
+      <Atom name="C71" type="C" charge="-0.03294" />
+      <Atom name="C72" type="C" charge="0.61382" />
+      <Atom name="C73" type="C" charge="0.61073" />
+      <Atom name="C74" type="C" charge="-0.03041" />
+      <Atom name="C75" type="C" charge="0.61348" />
+      <Atom name="C76" type="C" charge="-0.03083" />
+      <Atom name="C77" type="C" charge="-0.02712" />
+      <Atom name="C78" type="C" charge="0.61137" />
+      <Atom name="C79" type="C" charge="0.61219" />
+      <Atom name="C80" type="C" charge="-0.02924" />
+      <Atom name="C81" type="C" charge="0.61139" />
+      <Atom name="C82" type="C" charge="-0.03401" />
+      <Atom name="C83" type="C" charge="-0.03171" />
+      <Atom name="C84" type="C" charge="0.60813" />
+      <Atom name="O85" type="O" charge="-0.59306" />
+      <Atom name="O86" type="O" charge="-0.58932" />
+      <Atom name="O87" type="O" charge="-0.57881" />
+      <Atom name="O88" type="O" charge="-0.59215" />
+      <Atom name="O89" type="O" charge="-0.58760" />
+      <Atom name="O90" type="O" charge="-0.60347" />
+      <Atom name="O91" type="O" charge="-0.57864" />
+      <Atom name="O92" type="O" charge="-0.60190" />
+      <Atom name="O93" type="O" charge="-0.60069" />
+      <Atom name="O94" type="O" charge="-0.60272" />
+      <Atom name="O95" type="O" charge="-0.57967" />
+      <Atom name="O96" type="O" charge="-0.57668" />
+      <Atom name="O97" type="O" charge="-0.59107" />
+      <Atom name="O98" type="O" charge="-0.58945" />
+      <Atom name="O99" type="O" charge="-0.60377" />
+      <Atom name="O100" type="O" charge="-0.59178" />
+      <Atom name="O101" type="O" charge="-0.59036" />
+      <Atom name="O102" type="O" charge="-0.57707" />
+      <Atom name="O103" type="O" charge="-0.60188" />
+      <Atom name="O104" type="O" charge="-0.57947" />
+      <Atom name="O105" type="O" charge="-0.57887" />
+      <Atom name="O106" type="O" charge="-0.58046" />
+      <Atom name="O107" type="O" charge="-0.60144" />
+      <Atom name="O108" type="O" charge="-0.60179" />
+      <Atom name="O109" type="O" charge="-0.87998" />
+      <Atom name="O110" type="O" charge="-0.87821" />
+      <Atom name="O111" type="O" charge="-0.87869" />
+      <Atom name="O112" type="O" charge="-0.87910" />
+      <Atom name="O113" type="O" charge="-0.88371" />
+      <Atom name="O114" type="O" charge="-0.88312" />
+      </Residue>
+    <Residue name="GAS">
+      <Atom name="O17" type="O_co2" charge="-0.35" />
+      <Atom name="C18" type="C_co2" charge="0.70" />
+      </Residue>
+    </Residues>
+  <HarmonicBondForce>
+    <Bond class1="C1_co2" class2="O1_co2" length="0.115999" k="943153.3808" mask="true" />
+    </HarmonicBondForce>
+  <HarmonicAngleForce>
+    <Angle class1="O1_co2" class2="C1_co2" class3="O1_co2" angle="3.141593" k="817.5656" mask="true" />
+    </HarmonicAngleForce>
+  <NonbondedForce coulomb14scale="0.8333333333333334" lj14scale="0.5">
+    <UseAttributeFromResidue name="charge" />
+    <Atom epsilon="2.11525" sigma="0.40082" type="Al" />
+    <Atom epsilon="0.43979" sigma="0.34309" type="C" />
+    <Atom epsilon="0.18436" sigma="0.25711" type="H" />
+    <Atom epsilon="0.25079" sigma="0.31181" type="O" />
+    <Atom epsilon="0.65757" sigma="0.305" type="O_co2" />
+    <Atom epsilon="0.22469" sigma="0.28" type="C_co2" />
+    </NonbondedForce>
+  </ForceField>
