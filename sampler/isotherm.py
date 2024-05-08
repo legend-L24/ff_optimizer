@@ -9,12 +9,11 @@ There are some global parameters and functions to run before starting, this part
 dmff_path = "/home/yutao/project/github/DMFF/UFF_opt/", this parameter will be set in the other scripts about DMFF
 """
 
-# They work for the whole work
-
+# The aiida working directory, it changes when it moves to other computer
 aiida_path = "/home/yutao/project/aiida/applications/"
 
 
-def generateconfig(ff_data, temperature, pressure_list, cif_path, output_path):
+def generateconfig(ff_data, temperature, pressure_list, cif_path, output_name):
     global aiida_path
     
     with open(os.path.join(aiida_path, 'exp_config.py'), 'w') as f:
@@ -24,7 +23,7 @@ def generateconfig(ff_data, temperature, pressure_list, cif_path, output_path):
         f.write("cif_path = '{}'\n".format(cif_path))
         f.write("output_path = '{}'\n".format(os.path.join(aiida_path, output_name)))
 
-def submit(output_name):
+def submit_mof(output_name):
     global aiida_path
     script_path = os.path.join(aiida_path, 'submit_ff.sh')
     command = [script_path, aiida_path, output_name]
@@ -44,7 +43,7 @@ def submit(output_name):
         print(completed_process.stderr)
         # Handle the error or exit the program
 
-def submit_strucutures(structure_path, ff_data, suffix = ""):
+def submit_mofs(structure_path, ff_data, suffix = ""):
     basename, _ = os.path.splitext(ff_data)
     output_name = f"{basename}{suffix}.log"
     for mof in os.listdir(structure_path):
@@ -62,7 +61,7 @@ def submit_strucutures(structure_path, ff_data, suffix = ""):
         data = np.loadtxt(isotherm_path, delimiter=',')
         pressure_list = list(data[:,0])
         generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name))
-        submit(aiida_path, output_name)
+        submit_mof(aiida_path, output_name)
     
 if __name__ == "__main__":
 
@@ -78,7 +77,7 @@ if __name__ == "__main__":
     data = np.loadtxt(isotherm_path, delimiter=',')
     pressure_list = list(data[:,0])
     generateconfig(ff_data, temperature, pressure_list, cif_path, output_name)
-    submit(output_name)
+    submit_mof(output_name)
 
     '''
     if the structure follow the rule, 
@@ -89,4 +88,4 @@ if __name__ == "__main__":
 
     structure_path = "/home/yutao/project/Al-MOF/"
     ff_data = "try_0226.json"
-    submit_strucutures(structure_path, ff_data)
+    submit_mofs(structure_path, ff_data)
