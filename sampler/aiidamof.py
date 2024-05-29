@@ -26,10 +26,10 @@ from ase.io import read, write
 aiida.load_profile()
 import pytest
 import matplotlib.pyplot as plt
-
+import csv
 
 # Default global variable "mol/kg" or "per unit cell" or "per metal site"
-Isotherm_unit = "per metal site"  #"per unit cell" 
+Isotherm_unit = "mol/kg" #"per metal site"  #"per unit cell" 
 # Ioshterm_unit is controlled by Isotherm_unit, energy_unit = binding_energy
 
 # some constant will be used 
@@ -98,34 +98,37 @@ class AiidaMof:
             outdict_ls = qb.all()[:]
             self.ff_pressure = np.array(outdict_ls[0][0].get_dict()['isotherm']['pressure'])
             if Isotherm_unit == "mol/kg":
-                self.ff_isotherm = outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average']
+                self.ff_loading = outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average']
             elif Isotherm_unit == "per unit cell":
                 atoms = read(os.path.join(self.folder, self.cifname))
                 molar_mass = self.compute_molar_mass(atoms)
-                self.ff_isotherm = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000
+                self.ff_loading = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000
             elif Isotherm_unit == "per metal site":
                 atoms = read(os.path.join(self.folder, self.cifname))
                 molar_mass = self.compute_molar_mass(atoms)
                 numberofmetal = count_metal_atoms(atoms)
-                self.ff_isotherm = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000/numberofmetal
+                self.ff_loading = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000/numberofmetal
             else:
                 raise ValueError("Wrong global unit for isotherm")
         except:
             print("Isotherm workflow failed for ", self.isotherm_pk, self.mofname)
         
-        # read experimental isotherms from {Temperature}K.csv
-        exp_path = os.path.join(self.folder, f"{self.temperature}K.csv")
-        exp_isotherm = np.loadtxt(exp_path, delimiter=',')
-        if Isotherm_unit == "mol/kg":
-            transfer_unit = 1/22.4 #from STP to mol/Kg
-        elif Isotherm_unit == "per unit cell":
-            transfer_unit = 1/22.4*molar_mass/1000
-        elif Isotherm_unit == "per metal site":
-            transfer_unit = 1/22.4*molar_mass/1000/numberofmetal
-        else:
-            raise ValueError("Wrong global unit for isotherm")
-        self.exp_loading = exp_isotherm[:,1]*transfer_unit
-        self.exp_pressure = exp_isotherm[:,0] # unit bar
+        try:
+            # read experimental isotherms from {Temperature}K.csv
+            exp_path = os.path.join(self.folder, f"{self.temperature}K.csv")
+            exp_isotherm = np.loadtxt(exp_path, delimiter=',')
+            if Isotherm_unit == "mol/kg":
+                transfer_unit = 1/22.4 #from STP to mol/Kg
+            elif Isotherm_unit == "per unit cell":
+                transfer_unit = 1/22.4*molar_mass/1000
+            elif Isotherm_unit == "per metal site":
+                transfer_unit = 1/22.4*molar_mass/1000/numberofmetal
+            else:
+                raise ValueError("Wrong global unit for isotherm")
+            self.exp_loading = exp_isotherm[:,1]*transfer_unit
+            self.exp_pressure = exp_isotherm[:,0] # unit bar
+        except:
+            print("No experimental isotherm found for ", self.mofname)
     def set_binding(self):
         binding_pk = self.binding_pk
         qb = QueryBuilder()
@@ -145,16 +148,20 @@ class AiidaMof:
             
 
         else:
-            print(f"Wrong output dict, num: {len(outdict_ls)}, in workchain {binding_pk}, {self.mofname}")
+            print(f"Wrong output dict, num: {len(outdict_ls)}, in binding site workchain {binding_pk}, {self.mofname}")
     def compare_isotherm(self):
-        co_pressures, exp_part, ff_part = self.extract_same_pressure_points(self.exp_pressure, self.exp_loading, self.ff_pressure, self.ff_isotherm)
+        co_pressures, exp_part, ff_part = self.extract_same_pressure_points(self.exp_pressure, self.exp_loading, self.ff_pressure, self.ff_loading)
         self.co_isotherms = {"pressure": co_pressures, "experiment": exp_part, self.forcefield: ff_part}
         
     def extractdata(self):
-        self.set_isotherm()
-        self.set_binding()
-        self.compare_isotherm()
+        #print("This is", self.isotherm_pk, self.binding_pk)
+        if self.isotherm_pk:
+            self.set_isotherm()
+            self.compare_isotherm()
+        if self.binding_pk: 
+            self.set_binding()
         
+
 class AiidaMofs:
     def __init__(self, log_name, isdefaultpath=True):
         if isdefaultpath:
@@ -165,7 +172,6 @@ class AiidaMofs:
         self.extractdata()
     def __len__(self):
         return len(self.mofs)
-
     def __getitem__(self, index):
         return self.mofs[index]
 
@@ -176,7 +182,13 @@ class AiidaMofs:
         del self.mofs[index]
     def extractdata(self):
         for mof in self.mofs:
-            mof.extractdata()
+            #mof.extractdata()
+            
+            try:
+                mof.extractdata()
+            except:
+                print(f"meet error in extract data from structure {mof.mofname}")
+            
     @staticmethod
     def log_file(log_path):
         mofs = []
@@ -273,6 +285,29 @@ def plot_isotherm(aiidamofs):
             idx += 1
     plt.show()
 
+# merge two isotherms from two AiidaMofs, which contains the same structures but simulated by different force field
+def merge_aiida_mofs(aiida_mofs1, aiida_mofs2):
+    mof_dict = {}
+    for aiida_mof in aiida_mofs1.mofs+aiida_mofs2.mofs:
+        if not aiida_mof.co_isotherms:
+            continue
+        if aiida_mof.mofname not in mof_dict:
+            mof_dict[aiida_mof.mofname] = aiida_mof
+        else:
+            if mof_dict[aiida_mof.mofname].co_isotherms['pressure'] != aiida_mof.co_isotherms['pressure']:
+                raise ValueError("Different legenth of pressure list")
+            mof_dict[aiida_mof.mofname].co_isotherms.update(aiida_mof.co_isotherms)
+    return list(mof_dict.values())
+
+
+def write_to_csv(aiida_mofs, filename):
+    with open(filename, 'w', newline='') as csvfile:
+        fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for aiida_mof in aiida_mofs:
+            writer.writerow({'cifname': aiida_mof.cifname, 'ff_loading(mol/kg)': list(aiida_mof.ff_loading), 'ff_pressure(bar)': list(aiida_mof.ff_pressure)})
 
 if __name__ == "__main__":
 

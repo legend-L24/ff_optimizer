@@ -13,7 +13,7 @@ dmff_path = "/home/yutao/project/github/DMFF/UFF_opt/", this parameter will be s
 aiida_path = "/home/yutao/project/aiida/applications/"
 
 
-def generateconfig(ff_data, temperature, pressure_list, cif_path, output_name):
+def generateconfig(ff_data, temperature, pressure_list, cif_path, output_name, molecule):
     global aiida_path
     
     with open(os.path.join(aiida_path, 'exp_config.py'), 'w') as f:
@@ -22,7 +22,7 @@ def generateconfig(ff_data, temperature, pressure_list, cif_path, output_name):
         f.write("pressure_list = {}\n".format(pressure_list))
         f.write("cif_path = '{}'\n".format(cif_path))
         f.write("output_path = '{}'\n".format(os.path.join(aiida_path, output_name)))
-
+        f.write("molecule = '{}'\n".format(molecule))
 def submit_mof(output_name):
     global aiida_path
     script_path = os.path.join(aiida_path, 'submit_ff.sh')
@@ -43,7 +43,7 @@ def submit_mof(output_name):
         print(completed_process.stderr)
         # Handle the error or exit the program
 
-def submit_mofs(structure_path, ff_data, suffix = ""):
+def submit_mofs(structure_path, ff_data,molecule, suffix = ""):
     basename, _ = os.path.splitext(ff_data)
     output_name = f"{basename}{suffix}.log"
     for mof in os.listdir(structure_path):
@@ -60,8 +60,8 @@ def submit_mofs(structure_path, ff_data, suffix = ""):
         isotherm_path = os.path.join(dest_path, isotherm_path[0])
         data = np.loadtxt(isotherm_path, delimiter=',')
         pressure_list = list(data[:,0])
-        generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name))
-        submit_mof(aiida_path, output_name)
+        generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name),molecule)
+        submit_mof(output_name)
     
 if __name__ == "__main__":
 
