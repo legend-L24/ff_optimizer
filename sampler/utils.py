@@ -123,3 +123,13 @@ def process_csv(input_csv, output_csv, num_points_to_select):
     selected_points = select_max_spacing_points(data, num_points_to_select)    # 保存结果到新的CSV文件
     pd.DataFrame(selected_points).to_csv(output_csv, header=False, index=False)# 示例调用
 
+from datetime import datetime
+def get_time():
+    # Get the current date
+    current_date = datetime.now()
+
+    # Format the date as MMDD
+    formatted_date = current_date.strftime("%m%d")
+
+    # Print the formatted date
+    return formatted_date

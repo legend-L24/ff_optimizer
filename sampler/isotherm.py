@@ -62,6 +62,28 @@ def submit_mofs(structure_path, ff_data,molecule, suffix = ""):
         pressure_list = list(data[:,0])
         generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name),molecule)
         submit_mof(output_name)
+
+def submit_mofs_list(mof_list, structure_path, ff_data,molecule, suffix = ""):
+    basename, _ = os.path.splitext(ff_data)
+    output_name = f"{basename}{suffix}.log"
+    for mof in os.listdir(structure_path):
+        if mof not in mof_list:
+            continue
+        dest_path = os.path.join(structure_path, mof)
+        if not os.path.isdir(dest_path) or mof.startswith("."):
+            continue
+        print("Go to ", dest_path)
+        cif_path = [file for file in os.listdir(dest_path) if file.endswith(".cif")][0]
+        cif_path = os.path.join(dest_path, cif_path)
+        isotherm_path = [file for file in os.listdir(dest_path) if file.endswith("K.csv")]
+        if len(isotherm_path) == 0:
+            raise ValueError("No well defined isotherm file found in ", dest_path)
+        temperature = int(isotherm_path[0].rstrip("K.csv"))
+        isotherm_path = os.path.join(dest_path, isotherm_path[0])
+        data = np.loadtxt(isotherm_path, delimiter=',')
+        pressure_list = list(data[:,0])
+        generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name),molecule)
+        submit_mof(output_name)
     
 if __name__ == "__main__":
 

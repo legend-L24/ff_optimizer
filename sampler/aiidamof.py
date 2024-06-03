@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 import csv
 
 # Default global variable "mol/kg" or "per unit cell" or "per metal site"
-Isotherm_unit = "mol/kg" #"per metal site"  #"per unit cell" 
+#Isotherm_unit = "mol/kg" #"per metal site"  #"per unit cell" 
 # Ioshterm_unit is controlled by Isotherm_unit, energy_unit = binding_energy
 
 # some constant will be used 
@@ -56,7 +56,7 @@ def count_metal_atoms(atoms):
     return count
 class AiidaMof: 
     # forcefield must be the first line. folder mofname are also necessary for a AiidaMof object
-    def __init__(self, folder, cifname, mofname,forcefield, temperature=None, isotherm_pk=None, binding_pk=None):
+    def __init__(self, folder, cifname, mofname,forcefield, isotherm_unit="mol/kg", temperature=None, isotherm_pk=None, binding_pk=None):
         # there are some default choice you can change in a class
         self.folder = folder
         self.mofname = mofname
@@ -65,6 +65,7 @@ class AiidaMof:
         self.isotherm_pk = isotherm_pk
         self.binding_pk = binding_pk
         self.forcefield = forcefield
+        self.isotherm_unit = isotherm_unit
         self.exp_pressure = None
         self.exp_loading = None # this is a list
         self.ff_pressure = None
@@ -97,13 +98,13 @@ class AiidaMof:
             qb.append(Dict, with_incoming="workchain")
             outdict_ls = qb.all()[:]
             self.ff_pressure = np.array(outdict_ls[0][0].get_dict()['isotherm']['pressure'])
-            if Isotherm_unit == "mol/kg":
+            if self.isotherm_unit == "mol/kg":
                 self.ff_loading = outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average']
-            elif Isotherm_unit == "per unit cell":
+            elif self.isotherm_unit == "per unit cell":
                 atoms = read(os.path.join(self.folder, self.cifname))
                 molar_mass = self.compute_molar_mass(atoms)
                 self.ff_loading = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000
-            elif Isotherm_unit == "per metal site":
+            elif self.isotherm_unit == "per metal site":
                 atoms = read(os.path.join(self.folder, self.cifname))
                 molar_mass = self.compute_molar_mass(atoms)
                 numberofmetal = count_metal_atoms(atoms)
@@ -117,11 +118,11 @@ class AiidaMof:
             # read experimental isotherms from {Temperature}K.csv
             exp_path = os.path.join(self.folder, f"{self.temperature}K.csv")
             exp_isotherm = np.loadtxt(exp_path, delimiter=',')
-            if Isotherm_unit == "mol/kg":
+            if self.isotherm_unit == "mol/kg":
                 transfer_unit = 1/22.4 #from STP to mol/Kg
-            elif Isotherm_unit == "per unit cell":
+            elif self.isotherm_unit == "per unit cell":
                 transfer_unit = 1/22.4*molar_mass/1000
-            elif Isotherm_unit == "per metal site":
+            elif self.isotherm_unit == "per metal site":
                 transfer_unit = 1/22.4*molar_mass/1000/numberofmetal
             else:
                 raise ValueError("Wrong global unit for isotherm")
@@ -163,12 +164,12 @@ class AiidaMof:
         
 
 class AiidaMofs:
-    def __init__(self, log_name, isdefaultpath=True):
+    def __init__(self, log_name,isotherm_unit, isdefaultpath=True):
         if isdefaultpath:
             log_path = os.path.join(aiida_path, log_name) # os.path.join can delete overlap of path automatically
         else:
             log_path = log_name
-        self.mofs = self.log_file(log_path)
+        self.mofs = self.log_file(log_path, isotherm_unit)
         self.extractdata()
     def __len__(self):
         return len(self.mofs)
@@ -190,7 +191,7 @@ class AiidaMofs:
                 print(f"meet error in extract data from structure {mof.mofname}")
             
     @staticmethod
-    def log_file(log_path):
+    def log_file(log_path, isotherm_unit="mol/kg"):
         mofs = []
         aiida_mof = None
         with open(log_path, 'r') as f:
@@ -206,10 +207,13 @@ class AiidaMofs:
                     parts = os.path.normpath(path).split(os.sep)
                     cifname = parts[-2]
                     mofname = parts[-1]
-                    aiida_mof = AiidaMof(folder, mofname, cifname,  forcefield)
+                    aiida_mof = AiidaMof(folder, mofname, cifname,  forcefield, isotherm_unit)
                 if aiida_mof is not None:
                     if "The simulation temperature is:" in line:
-                        aiida_mof.temperature = int(line.split()[-1])
+                        try:
+                            aiida_mof.temperature = int(line.split()[-1])
+                        except:
+                            aiida_mof.temperature = float(line.split()[-1])
                     if "This is the final pk values for isotherm workflow:" in line:
                         aiida_mof.isotherm_pk = int(line.split()[-1])
                     if "This is the final pk values for binding sites workflow:" in line:
