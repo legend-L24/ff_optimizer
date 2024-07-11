@@ -1,0 +1,17 @@
+cif.label,MOFname,CSD_label,Formula,Usage,Synonyms,literature,comment
+RSM0863,KIXXOG01_clean,KIXXOG01,C48H24Ca4O16,Yes,,,
+RSM0288,MIMKIE_clean,MIMKIE,C24H8Ca4O20,no,,,"I do not find  literature, but this structure is similar to MIL-160"
+RSM1059,NOCKUM_clean,NOCKUM,C48H24Ca6O24,no,V,,
+RSM4038,NOHSUA_clean,NOHSUA,C216H132Ca10O52,yes,CaBTB,,
+RSM3478,OBIBEJ_clean,OBIBEJ,C132H114Ca8O40,No,CaTCMTB,,"Only N2 isotherm, ions"
+RSM0369,OKAYOQ_clean,OKAYOQ,C34H20CaO8,Yes,SBMOF-2,,It has c2h2 but not co2
+RSM0463,OSAVEK_clean,OSAVEK,C32H16Ca4O16,Yes,Ca-BDC,https://pubs.acs.org/doi/10.1021/cg101114h,"These are the same paper, 1b"
+RSM0057,OSAWEL_clean,OSAWEL,C16H8Ca2O12,Yes,Ca-H2dhtp,https://pubs.acs.org/doi/10.1021/cg101114h,"These are the same paper, 4b"
+RSM0609,PARHAS_clean,PARHAS,C24H32Ca4O16,No,GWMOF-7,,"It contains solvent with N-C5, without benzene, I do not find isotherms but an interesting review"
+RSM1683,POMSER_clean,POMSER,C64H32Ca8O32,No,,,It seems flexible
+RSM0435,RAJFAL_clean,RAJFAL,C32H18Ca3O14,Yes,,,The paper is very short and only related to crystal structure
+RSM0072,RUFMUA01_clean,RUFMUA01,C18H8Ca2O12,Yes,,,
+RSM0657,TECTUS_clean,TECTUS,C36H12Ca6O24,Yes,,,The same paper to RUFMUA01
+RSM2009,WUFSAT_clean,WUFSAT,C40H72Ca4O40,no,,,
+RSM0473,ECEDEY_clean,ECEDEY,C36H16Ca2O16,Yes,,,I do not find paper
+RSM2964,ASOVEL_clean,ASOVEL,C120H80Ca4O16,no,LIFM-40,,

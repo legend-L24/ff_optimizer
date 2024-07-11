@@ -1,0 +1,9 @@
+cif.label,MOFname,CSD_label,Formula,Usage,Synonyms,literature,comment
+RSM4068,KAKCAD_clean,KAKCAD,C216H136O56Sr10,no,,,"only contains Ba isotherms, ions"
+RSM0864,KIYMAI01_clean,KIYMAI01,C48H24O16Sr4,Yes,,,
+RSM0069,NIRNAD_clean,NIRNAD,C18H8O12Sr2,Yes,Sc-BTC,,
+RSM0204,NOCLOH01_clean,NOCLOH01,C24H12O12Sr3,Yes,,,
+RSM0451,NOCLUN_clean,NOCLUN,C32H16O16Sr4,Yes,,,They are similar one to 01
+RSM2119,XEZRIF_clean,XEZRIF,C72H28O50Sr10,no,,,ions
+RSM0303,YUFLOC_clean,YUFLOC,C24H12O18Sr3,No,,,only contains Ca isotherms
+RSM0469,ECEDAU_clean,ECEDAU,C36H14O16Sr3,Yes,,,I do not find original literature

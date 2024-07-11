@@ -55,11 +55,14 @@ def submit_mofs(structure_path, ff_data,molecule, suffix = ""):
         cif_path = os.path.join(dest_path, cif_path)
         isotherm_path = [file for file in os.listdir(dest_path) if file.endswith("K.csv")]
         if len(isotherm_path) == 0:
-            raise ValueError("No well defined isotherm file found in ", dest_path)
-        temperature = int(isotherm_path[0].rstrip("K.csv"))
-        isotherm_path = os.path.join(dest_path, isotherm_path[0])
-        data = np.loadtxt(isotherm_path, delimiter=',')
-        pressure_list = list(data[:,0])
+            print("No well defined isotherm file found in ", dest_path)
+            temperature = 273 # it is a default value but isotherm workchain will not be started
+            pressure_list = [0.05] # it is a default value but isotherm workchain will not be started
+        else:
+            temperature = int(isotherm_path[0].rstrip("K.csv"))
+            isotherm_path = os.path.join(dest_path, isotherm_path[0])
+            data = np.loadtxt(isotherm_path, delimiter=',')
+            pressure_list = list(data[:,0])
         generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name),molecule)
         submit_mof(output_name)
 

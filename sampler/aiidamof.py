@@ -16,6 +16,7 @@ aiida_path = "/home/yutao/project/aiida/applications/"
 
 
 
+R = 8.31446261815324 # J/(mol K)
 
 from aiida.orm import QueryBuilder, Group, WorkChainNode, Dict, StructureData, CifData
 import aiida
@@ -70,9 +71,12 @@ class AiidaMof:
         self.exp_loading = None # this is a list
         self.ff_pressure = None
         self.ff_loading = None # this is a list
-        self.ff_energy = None 
+        self.ff_energy = {} 
         self.dft_energy = None
         self.co_isotherms = None # this is a directories included points with the same pressure from simulated isotherms and experimental isotherms
+        self.isotherm_enthalpy = None # this is enthalpy of adsorption while a certain pressure and uptake
+        self.isotherm_enthalpy_dev = None # this is the deviation of enthalpy of adsorption because of many configurations
+        self.ff_loading_dev = None # this is the deviation of loading because of many configurations
     @staticmethod
     def compute_molar_mass(atoms):
         return sum(atom.mass for atom in atoms)
@@ -100,17 +104,22 @@ class AiidaMof:
             self.ff_pressure = np.array(outdict_ls[0][0].get_dict()['isotherm']['pressure'])
             if self.isotherm_unit == "mol/kg":
                 self.ff_loading = outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average']
+                self.ff_loading_dev = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_dev'])
             elif self.isotherm_unit == "per unit cell":
                 atoms = read(os.path.join(self.folder, self.cifname))
                 molar_mass = self.compute_molar_mass(atoms)
                 self.ff_loading = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000
+                self.ff_loading_dev = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_dev'])*molar_mass/1000
             elif self.isotherm_unit == "per metal site":
                 atoms = read(os.path.join(self.folder, self.cifname))
                 molar_mass = self.compute_molar_mass(atoms)
                 numberofmetal = count_metal_atoms(atoms)
                 self.ff_loading = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average'])*molar_mass/1000/numberofmetal
+                self.ff_loading_dev = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_dev'])*molar_mass/1000/numberofmetal
             else:
                 raise ValueError("Wrong global unit for isotherm")
+            self.isotherm_enthalpy = np.array(outdict_ls[0][0].get_dict()['isotherm']['enthalpy_of_adsorption_average'])
+            self.isotherm_enthalpy_dev = np.array(outdict_ls[0][0].get_dict()['isotherm']['enthalpy_of_adsorption_dev'])
         except:
             print("Isotherm workflow failed for ", self.isotherm_pk, self.mofname)
         
@@ -139,17 +148,20 @@ class AiidaMof:
             print(f"WorkChain with pk={binding_pk} has not finished yet.")
         qb.append(Dict, with_incoming="workchain")
         outdict_ls = qb.all()[:]
+        #temperatue_minimization = 50 # this value comes from default value in binding site workchain, the temperatue last step is 50K
         if len(outdict_ls)==2:
             try:
-                self.ff_energy = outdict_ls[0][0]["energy_host/ads_tot_final"][-1]
+                self.ff_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_tot_final"][-1] #+ R*temperatue_minimization/1000 # temperature correction
                 self.dft_energy = outdict_ls[1][0]["binding_energy_corr"]
             except:
-                self.ff_energy = outdict_ls[1][0]["energy_host/ads_tot_final"][-1]
+                self.ff_energy[self.forcefield] = outdict_ls[1][0]["energy_host/ads_tot_final"][-1] #+ R*temperatue_minimization/1000 # temperature correction
                 self.dft_energy = outdict_ls[0][0]["binding_energy_corr"]
-            
-
         else:
-            print(f"Wrong output dict, num: {len(outdict_ls)}, in binding site workchain {binding_pk}, {self.mofname}")
+            print(f"Without DFT-Binding energy, num: {len(outdict_ls)}, in binding site workchain {binding_pk}, {self.mofname}")
+            try:
+                self.ff_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_tot_final"][-1] #+ R*temperatue_minimization/1000 # temperature correction
+            except:
+                self.ff_energy[self.forcefield] = outdict_ls[1][0]["energy_host/ads_tot_final"][-1] #+ R*temperatue_minimization/1000 # temperature correction
     def compare_isotherm(self):
         co_pressures, exp_part, ff_part = self.extract_same_pressure_points(self.exp_pressure, self.exp_loading, self.ff_pressure, self.ff_loading)
         self.co_isotherms = {"pressure": co_pressures, "experiment": exp_part, self.forcefield: ff_part}
@@ -170,6 +182,7 @@ class AiidaMofs:
         else:
             log_path = log_name
         self.mofs = self.log_file(log_path, isotherm_unit)
+        
         self.extractdata()
     def __len__(self):
         return len(self.mofs)
@@ -184,7 +197,6 @@ class AiidaMofs:
     def extractdata(self):
         for mof in self.mofs:
             #mof.extractdata()
-            
             try:
                 mof.extractdata()
             except:
@@ -265,7 +277,43 @@ def create_fig_axs(N):
 
     return fig, axs
 
-def plot_isotherm(aiidamofs):
+def create_fig_axs_small(N):
+    # some default parameters for the plot function
+    if N == 1:
+        scale = 3
+    elif 1 < N < 4:
+        scale = 2
+    else:
+        scale = 1
+
+    subplot_width = 4*scale
+    subplot_height = 4*scale
+    hspace = 0.1
+    wspace = 0.2
+
+    rows = int(np.ceil(N / 3))
+    cols = min(3, N)
+
+    fig_width = (subplot_width * cols) + (wspace * (cols+1))  # 总宽度包括子图和间隙
+    fig_height = (subplot_height * rows) + (hspace * (rows+1))  # 总高度包括子图和间隙
+    fig, axs = plt.subplots(rows, cols, figsize=(fig_width, fig_height))
+    fig.subplots_adjust(hspace=hspace, wspace=wspace)
+    
+    if N == 1:
+        axs = np.array([[axs]])
+    elif N <= 3:
+        axs = np.array([axs])
+    else:
+        axs = np.array(axs)
+
+    # Hide unused subplots
+    for idx in range(N, rows*cols):
+        i, j = divmod(idx, 3)
+        axs[i, j].axis('off')
+
+    return fig, axs
+
+def plot_isotherm(aiidamofs,pressure_unit="bar"):
     # global parameter
     fz = 18
     aiidamofs = [aiidamof for aiidamof in aiidamofs if aiidamof.co_isotherms]
@@ -278,16 +326,62 @@ def plot_isotherm(aiidamofs):
             for keys, values in aiidamof.co_isotherms.items():
                 if keys == 'pressure':
                     continue
+                if pressure_unit == "mbar":
+                    transfer_pressure_unit = 1000
+                elif pressure_unit == "bar":
+                    transfer_pressure_unit = 1
+                else:
+                    raise ValueError("pressure_unit should be 'mbar' or 'bar'")
+
                 ax = axs[i,j]
-                ax.plot(aiidamof.co_isotherms['pressure'], aiidamof.co_isotherms[keys], marker='D', label=keys)
+                ax.plot(aiidamof.co_isotherms['pressure']*transfer_pressure_unit, aiidamof.co_isotherms[keys], marker='D', label=keys)
                 ax.set_title(f"{aiidamof.mofname} at {aiidamof.temperature} K" ,fontsize=fz)
                 ax.legend(fontsize=fz)
-                ax.set_ylabel(f"{Isotherm_unit}", fontsize=fz)
-                ax.set_xlabel("Pressure (bar)", fontsize=fz)
-                ax.tick_params(axis='both', which='major', labelsize=fz-4)
+                ax.set_ylabel(f"{aiidamof.isotherm_unit}", fontsize=fz)
+                ax.set_xlabel(f"Pressure ({pressure_unit})", fontsize=fz)
+                ax.tick_params(axis='both', which='major', labelsize=fz-2)
                 ax.tick_params(axis='both', which='minor', labelsize=fz-8)
+                ax.set_ylim([0, max(max(aiidamof.ff_loading), max(aiidamof.exp_loading))*1.2])
             idx += 1
     plt.show()
+
+
+
+
+def plot_isotherm_errorbar(aiidamofs,experiment=True, pressure_unit="mbar", FFname=None):
+    # global parameter
+    fz = 16
+    aiidamofs = [aiidamof for aiidamof in aiidamofs if aiidamof.co_isotherms]
+    
+    fig, axs = create_fig_axs_small(len(aiidamofs))
+    idx = 0
+    for aiidamof in aiidamofs:
+        if not FFname:
+            FFname = aiidamof.forcefield    
+        if not aiidamof.co_isotherms:
+            continue
+        i, j = divmod(idx, 3) # the certain way to calculate positions of figures
+        ax = axs[i,j]
+        if pressure_unit == "mbar":
+            aiidamof.ff_pressure = aiidamof.ff_pressure * 1000
+            aiidamof.exp_pressure = aiidamof.exp_pressure * 1000
+        elif pressure_unit == "bar":
+            aiidamof.ff_pressure = aiidamof.ff_pressure
+            aiidamof.exp_pressure = aiidamof.exp_pressure
+        else:
+            raise ValueError("pressure_unit should be 'mbar' or 'bar'")
+        if experiment:
+            ax.scatter(aiidamof.exp_pressure, aiidamof.exp_loading, marker='o', color='green', label='experiment')
+        ax.errorbar(aiidamof.ff_pressure, aiidamof.ff_loading, yerr=aiidamof.ff_loading_dev, fmt='o', capsize=5, capthick=1, label=FFname)
+        ax.set_title(f"{aiidamof.mofname} at {aiidamof.temperature} K" ,fontsize=fz)
+        ax.legend(fontsize=fz)
+        ax.set_ylabel(f"{aiidamof.isotherm_unit}", fontsize=fz)
+        ax.set_xlabel(f"Pressure ({pressure_unit})", fontsize=fz)
+        ax.tick_params(axis='both', which='major', labelsize=fz-2)
+        ax.tick_params(axis='both', which='minor', labelsize=fz-8)
+        ax.set_ylim([0, max(max(aiidamof.ff_loading), max(aiidamof.exp_loading))*1.2])
+        idx += 1
+    plt.legend(fontsize=fz)
 
 # merge two isotherms from two AiidaMofs, which contains the same structures but simulated by different force field
 def merge_aiida_mofs(aiida_mofs1, aiida_mofs2):
@@ -301,17 +395,81 @@ def merge_aiida_mofs(aiida_mofs1, aiida_mofs2):
             if mof_dict[aiida_mof.mofname].co_isotherms['pressure'] != aiida_mof.co_isotherms['pressure']:
                 raise ValueError("Different legenth of pressure list")
             mof_dict[aiida_mof.mofname].co_isotherms.update(aiida_mof.co_isotherms)
+            if mof_dict[aiida_mof.mofname].ff_energy and aiida_mof.ff_energy:
+                if mof_dict[aiida_mof.mofname].ff_energy:
+                    mof_dict[aiida_mof.mofname].ff_energy.update(aiida_mof.ff_energy)
+                elif aiida_mof.ff_energy:
+                    mof_dict[aiida_mof.mofname].ff_energy = aiida_mof.ff_energy
+            if mof_dict[aiida_mof.mofname].dft_energy and aiida_mof.dft_energy:
+                if not mof_dict[aiida_mof.mofname].dft_energy:
+                    mof_dict[aiida_mof.mofname].dft_energy = aiida_mof.dft_energy
+    return list(mof_dict.values())
+
+def merge_aiida_mofs_list(aiida_mofs1, aiida_mofs2):
+    mof_dict = {}
+    for aiida_mof in aiida_mofs1+aiida_mofs2:
+        if aiida_mof.mofname not in mof_dict:
+            mof_dict[aiida_mof.mofname] = aiida_mof
+        else:
+            if mof_dict[aiida_mof.mofname].ff_energy or aiida_mof.ff_energy:
+                if mof_dict[aiida_mof.mofname].ff_energy:
+                    mof_dict[aiida_mof.mofname].ff_energy.update(aiida_mof.ff_energy)
+                elif aiida_mof.ff_energy:
+                    mof_dict[aiida_mof.mofname].ff_energy = aiida_mof.ff_energy
+            if mof_dict[aiida_mof.mofname].dft_energy or aiida_mof.dft_energy:
+                if not mof_dict[aiida_mof.mofname].dft_energy:
+                    mof_dict[aiida_mof.mofname].dft_energy = aiida_mof.dft_energy
     return list(mof_dict.values())
 
 
 def write_to_csv(aiida_mofs, filename):
     with open(filename, 'w', newline='') as csvfile:
-        fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)']
+        fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)','ff_loading_dev(mol/kg)','enthalpy_of_adsorption(kJ/mol)','enthalpy_of_adsorption_dev(kJ/mol)']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
         for aiida_mof in aiida_mofs:
-            writer.writerow({'cifname': aiida_mof.cifname, 'ff_loading(mol/kg)': list(aiida_mof.ff_loading), 'ff_pressure(bar)': list(aiida_mof.ff_pressure)})
+            writer.writerow({'cifname': aiida_mof.cifname, 
+                             'ff_loading(mol/kg)': list(aiida_mof.ff_loading),
+                             'ff_loading_dev(mol/kg)': list(aiida_mof.ff_loading_dev),
+                             'ff_pressure(bar)': list(aiida_mof.ff_pressure),
+                             'enthalpy_of_adsorption(kJ/mol)': list(aiida_mof.isotherm_enthalpy),
+                             'enthalpy_of_adsorption_dev(kJ/mol)': list(aiida_mof.isotherm_enthalpy_dev)})
+
+'''
+this is a simple plot function for the data with different elements, 
+the function provides choices of units, log scale, and the range of x and y axis
+'''
+
+def custom_uppercase(s):
+    elements = ['Al', 'Mg', 'Ca','Ga','In','Ba','Sr']  # 定义需要保留第二个字母小写的元素列表
+    result = []
+    i = 0    
+    while i < len(s):
+        if i + 1 < len(s) and s[i:i+2] in elements:  # 检查是否是元素名称
+            result.append(s[i:i+2])  # 将元素名称直接添加到结果中
+            i += 2
+        else:
+            result.append(s[i].upper())  # 否则将字符转换为大写并添加到结果中
+            i += 1    
+    return ''.join(result)# 测试例子
+
+
+def plot_single_isotherm(plt,filename, isotherm_unit, suffix="", log_scale=False):
+    '''
+    plot the isotherm data with different elements
+    '''
+    # read the data
+    aiidamofs = AiidaMofs(filename, isotherm_unit)
+    # plot the data
+    for aiidamof in aiidamofs:
+        if aiidamof.co_isotherms:
+            
+            labelname = custom_uppercase(aiidamof.mofname)+suffix
+            if not log_scale:
+                plt.scatter(aiidamof.co_isotherms["experiment"], aiidamof.co_isotherms[aiidamof.forcefield], label=labelname)
+            else:
+                plt.scatter(np.log10(aiidamof.co_isotherms["experiment"]), np.log10(aiidamof.co_isotherms[aiidamof.forcefield]), label=labelname)
 
 if __name__ == "__main__":
 

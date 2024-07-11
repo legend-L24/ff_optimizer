@@ -1,0 +1,14 @@
+MOFname,CSD_label,Formula,Usage,Synonyms,literature,comment
+KIXXOG_clean,KIXXOG,C48H24Ca4O16,yes,,,"Good luck, 7 coordinate with solvent"
+YUNKAV_clean,YUNKAV,C34H20CaO8,No,,,"SBMOF-2, only have isotherms for Xe"
+OSAVUA_clean,OSAVUA,C16H8Ca2O12,"No, open metal site with co2 isotherms",,,
+YUHHIU_clean,YUHHIU,C32H16Ca4O24,"No, open metal site with co2 isotherms",,,
+LACGAZ_clean,LACGAZ,C64H32Ca4O32,Make a mist take about this gif,,,
+PARHEW_clean,PARHEW,C24H32Ca4O16,No,GWMOF-8,,
+YUNJUO_clean,YUNJUO,C34H20CaO8,No,,,"SBMOF-2, only have isotherms for Xe"
+ZEGSUB_clean,ZEGSUB,C196H224Ca24O84,No,,,
+RUFMUA_clean,RUFMUA,C18H8Ca2O12,"No, open metal without co2 isotherm",,,
+POMSOB_clean,POMSOB,C48H24Ca6O24,Yes,,,
+YOQYEK_clean,YOQYEK,C18H6Ca2O12,Yes,,,
+OKAYUW_clean,OKAYUW,C34H20CaO8,No,,,SBMOF-2 ethylene
+OKAZAD_clean,OKAZAD,C34H20CaO8,No,,,SBMOF-2 ethylene
