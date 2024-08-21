@@ -1,0 +1,9 @@
+ff_data = '/home/yutao/project/aiida/applications/ff_1.json'
+copy_from_remote = 'Movies/System_0/'
+dest_path = '/home/yutao/project/MIL-120/traj1'
+exp_path = '/home/yutao/project/In-MOF/mil-68/273K.csv'
+Number_of_points = 4
+cif_path = '/home/yutao/project/In-MOF/mil-68/RSM1292.cif'
+pressure_list = [0.02682803831503611, 0.05143825239394306, 0.07945753306689383, 0.10755405706195065]
+Transfer_unit = 1.775644207799701
+Temperature = 273
