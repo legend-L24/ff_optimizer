@@ -11,11 +11,11 @@ Here we use automatic differentiation technique to optimize force fields for gas
 ## In-house modification:
 
 
-[Modification in Aiida-LSMO workflow](https://github.com/legend-L24/ff_optimizer/tree/main/sampler/calculation)
+[Modification in AiiDa-LSMO workflow](https://github.com/legend-L24/ff_optimizer/tree/main/sampler/calcfunctions)
 
 I add "ff_optim" option to the Aiida-LSMO workflow, which allows self-defined FFs for simulation. In pratice, I add some lines in ff_builder_module.py, isotherm.py, simulation_annealing.py within calculation folder. The modified code can be found in calulation folder. 
 
-[Execution scripts for Aiida-LSMO](https://github.com/legend-L24/ff_optimizer/tree/main/sampler/application)
+[Execution scripts for AiiDa-LSMO](https://github.com/legend-L24/ff_optimizer/tree/main/sampler/applications)
 
 [Execution scripts for DMFF](https://github.com/legend-L24/ff_optimizer/tree/main/optimizer/UFF_opt)
 
