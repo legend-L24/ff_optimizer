@@ -1,0 +1,8 @@
+Chemical formula,literature,Method,Experiment-CO2,Experiment-N2,Experiment-CH4,Experiment-H2,DFT-CO2,DFT-N2,DFT-CH4,DFT-H2,FF-CO2,FF-N2,FF-CH4,FF-H2
+Al-NDC-OH(Al),https://pubs.rsc.org/en/content/articlelanding/2012/cc/c1cc15106a,Clausius–Clapeyron relation,-25.4,No,-20.373647,-6.94,-29.933641984879,-23.979,-29.504914869293,-11.82,-33.2,-20.425,-24.9,-7.9671
+CAU10H,https://onlinelibrary.wiley.com/doi/10.1002/anie.202110820,Clausius–Clapeyron relation,-27.436,,,,-30.775129151379,-21.011262142255,-25.99374328272,-10.721561750655,-31.617163473562,-18.7466717364,20.94430907634,-7.0386327081923
+MFM-300(In),https://onlinelibrary.wiley.com/doi/10.1002/adma.201602338,Clausius–Clapeyron relation,-22.477,-12.477,,,-28.318169200919,-22.778150616632,-25.428285136722,-14.48487346918,-29.608806211847,-15.990628450726,-17.685670426692,-6.3855868332923
+MOF-889(Mg),https://globalscience.berkeley.edu/sites/default/files/15-hexa_0.pdf,"using a
+virial-type expansion equation ",-30.269722,-21.861176,-25.477572,,-35.671513666184,-23.254293228469,,,-35.05043178931,-19.144587412349,,
+MIL-68(In),https://royalsocietypublishing.org/doi/10.1098/rsos.181378#RSOS181378F5,"using a
+virial-type expansion equation ",-16.373647,,,-6.640178,-26.912606203054,-22.557507019486,,-9.4070526292861,-26.582615269708,-15.720278850967,,-6.758295028944

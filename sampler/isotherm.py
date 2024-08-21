@@ -62,6 +62,7 @@ def submit_mofs(structure_path, ff_data,molecule, suffix = ""):
             temperature = int(isotherm_path[0].rstrip("K.csv"))
             isotherm_path = os.path.join(dest_path, isotherm_path[0])
             data = np.loadtxt(isotherm_path, delimiter=',')
+            data = np.atleast_2d(data)
             pressure_list = list(data[:,0])
         generateconfig(ff_data, temperature, pressure_list, cif_path, os.path.join(aiida_path, output_name),molecule)
         submit_mof(output_name)

@@ -1,0 +1,76 @@
+<ForceField>
+    <AtomTypes>
+        <Type class="Al" element="Al" mass="0.0" name="Al"/>
+        <Type class="C" element="C" mass="0.0" name="C"/>
+        <Type class="H" element="H" mass="0.0" name="H"/>
+        <Type class="O" element="O" mass="0.0" name="O"/>
+        <Type class="C1_co2" element="C" mass="12.010" name="C_co2"/>
+        <Type class="O1_co2" element="O" mass="15.999" name="O_co2"/>
+    </AtomTypes>
+    <Residues>
+        <Residue name="MOL">
+            <Atom name="Al1" type="Al" charge="1.65857"/>
+            <Atom name="Al2" type="Al" charge="1.65856"/>
+            <Atom name="Al3" type="Al" charge="1.64626"/>
+            <Atom name="Al4" type="Al" charge="1.64749"/>
+            <Atom name="H1" type="H" charge="0.41785"/>
+            <Atom name="H2" type="H" charge="0.41373"/>
+            <Atom name="H3" type="H" charge="0.41657"/>
+            <Atom name="H4" type="H" charge="0.41461"/>
+            <Atom name="H5" type="H" charge="0.41773"/>
+            <Atom name="H6" type="H" charge="0.41364"/>
+            <Atom name="H7" type="H" charge="0.41658"/>
+            <Atom name="H8" type="H" charge="0.41466"/>
+            <Atom name="H9" type="H" charge="0.12728"/>
+            <Atom name="H10" type="H" charge="0.12726"/>
+            <Atom name="C1" type="C" charge="0.62462"/>
+            <Atom name="C2" type="C" charge="-0.02738"/>
+            <Atom name="C3" type="C" charge="0.62697"/>
+            <Atom name="C4" type="C" charge="-0.03170"/>
+            <Atom name="C5" type="C" charge="0.62454"/>
+            <Atom name="C6" type="C" charge="-0.02728"/>
+            <Atom name="C7" type="C" charge="0.62705"/>
+            <Atom name="C8" type="C" charge="-0.03187"/>
+            <Atom name="C9" type="C" charge="-0.11722"/>
+            <Atom name="C10" type="C" charge="-0.11724"/>
+            <Atom name="O1" type="O" charge="-0.92630"/>
+            <Atom name="O2" type="O" charge="-0.97561"/>
+            <Atom name="O3" type="O" charge="-0.60514"/>
+            <Atom name="O4" type="O" charge="-0.57838"/>
+            <Atom name="O5" type="O" charge="-0.92481"/>
+            <Atom name="O6" type="O" charge="-0.97588"/>
+            <Atom name="O7" type="O" charge="-0.60682"/>
+            <Atom name="O8" type="O" charge="-0.57781"/>
+            <Atom name="O9" type="O" charge="-0.92626"/>
+            <Atom name="O10" type="O" charge="-0.97553"/>
+            <Atom name="O11" type="O" charge="-0.60522"/>
+            <Atom name="O12" type="O" charge="-0.57825"/>
+            <Atom name="O13" type="O" charge="-0.92474"/>
+            <Atom name="O14" type="O" charge="-0.97585"/>
+            <Atom name="O15" type="O" charge="-0.60674"/>
+            <Atom name="O16" type="O" charge="-0.57792"/>
+        </Residue>
+        <Residue name="GAS">
+            <Atom name="O17" type="O_co2" charge="-0.35"/>
+            <Atom name="C18" type="C_co2" charge="0.70"/>
+            <Atom name="O19" type="O_co2" charge="-0.35"/>
+            <Bond atomName1="O19" atomName2="C18"/>
+            <Bond atomName1="O17" atomName2="C18"/>
+        </Residue>
+    </Residues>
+    <HarmonicBondForce>
+        <Bond class1="C1_co2" class2="O1_co2" length="0.115999" k="943153.3808" mask="true"/>
+    </HarmonicBondForce>
+    <HarmonicAngleForce>
+        <Angle class1="O1_co2" class2="C1_co2" class3="O1_co2" angle="3.141593" k="817.5656" mask="true"/>
+    </HarmonicAngleForce>
+    <NonbondedForce coulomb14scale="0.8333333333333334" lj14scale="0.5">
+        <UseAttributeFromResidue name="charge"/>
+        <Atom epsilon="2.11525" sigma="0.40082" type="Al"/>
+        <Atom epsilon="0.43979" sigma="0.34309" type="C"/>
+        <Atom epsilon="0.18436" sigma="0.25711" type="H"/>
+        <Atom epsilon="0.25079" sigma="0.31181" type="O"/>
+        <Atom epsilon="0.65757" sigma="0.305"  type="O_co2"/>
+        <Atom epsilon="0.22469" sigma="0.28" type="C_co2"/>
+    </NonbondedForce>
+</ForceField>

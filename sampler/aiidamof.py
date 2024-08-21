@@ -72,11 +72,15 @@ class AiidaMof:
         self.ff_pressure = None
         self.ff_loading = None # this is a list
         self.ff_energy = {} 
+        self.vdw_energy = {}
+        self.coul_energy = {}
         self.dft_energy = None
         self.co_isotherms = None # this is a directories included points with the same pressure from simulated isotherms and experimental isotherms
         self.isotherm_enthalpy = None # this is enthalpy of adsorption while a certain pressure and uptake
         self.isotherm_enthalpy_dev = None # this is the deviation of enthalpy of adsorption because of many configurations
         self.ff_loading_dev = None # this is the deviation of loading because of many configurations
+        self.dft_dict = {} # when diffferent force field generate different DFT value, I store it. This property only work in merge function
+        self.pova = None # this is the pova value for the mof
     @staticmethod
     def compute_molar_mass(atoms):
         return sum(atom.mass for atom in atoms)
@@ -102,6 +106,7 @@ class AiidaMof:
             qb.append(Dict, with_incoming="workchain")
             outdict_ls = qb.all()[:]
             self.ff_pressure = np.array(outdict_ls[0][0].get_dict()['isotherm']['pressure'])
+            self.pova = outdict_ls[0][0].get_dict()['POAV_A^3']
             if self.isotherm_unit == "mol/kg":
                 self.ff_loading = outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_average']
                 self.ff_loading_dev = np.array(outdict_ls[0][0].get_dict()['isotherm']['loading_absolute_dev'])
@@ -127,6 +132,7 @@ class AiidaMof:
             # read experimental isotherms from {Temperature}K.csv
             exp_path = os.path.join(self.folder, f"{self.temperature}K.csv")
             exp_isotherm = np.loadtxt(exp_path, delimiter=',')
+            exp_isotherm = np.atleast_2d(exp_isotherm)
             if self.isotherm_unit == "mol/kg":
                 transfer_unit = 1/22.4 #from STP to mol/Kg
             elif self.isotherm_unit == "per unit cell":
@@ -152,9 +158,13 @@ class AiidaMof:
         if len(outdict_ls)==2:
             try:
                 self.ff_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_tot_final"][-1] #+ R*temperatue_minimization/1000 # temperature correction
+                self.coul_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_coulomb_final"][-1]
+                self.vdw_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_vdw_final"][-1]
                 self.dft_energy = outdict_ls[1][0]["binding_energy_corr"]
             except:
                 self.ff_energy[self.forcefield] = outdict_ls[1][0]["energy_host/ads_tot_final"][-1] #+ R*temperatue_minimization/1000 # temperature correction
+                self.coul_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_coulomb_final"][-1]
+                self.vdw_energy[self.forcefield] = outdict_ls[0][0]["energy_host/ads_vdw_final"][-1]
                 self.dft_energy = outdict_ls[0][0]["binding_energy_corr"]
         else:
             print(f"Without DFT-Binding energy, num: {len(outdict_ls)}, in binding site workchain {binding_pk}, {self.mofname}")
@@ -381,6 +391,7 @@ def plot_isotherm_errorbar(aiidamofs,experiment=True, pressure_unit="mbar", FFna
         ax.tick_params(axis='both', which='minor', labelsize=fz-8)
         ax.set_ylim([0, max(max(aiidamof.ff_loading), max(aiidamof.exp_loading))*1.2])
         idx += 1
+    plt.tight_layout()
     plt.legend(fontsize=fz)
 
 # merge two isotherms from two AiidaMofs, which contains the same structures but simulated by different force field
@@ -416,15 +427,27 @@ def merge_aiida_mofs_list(aiida_mofs1, aiida_mofs2):
                     mof_dict[aiida_mof.mofname].ff_energy.update(aiida_mof.ff_energy)
                 elif aiida_mof.ff_energy:
                     mof_dict[aiida_mof.mofname].ff_energy = aiida_mof.ff_energy
+            if mof_dict[aiida_mof.mofname].vdw_energy or aiida_mof.vdw_energy:
+                if mof_dict[aiida_mof.mofname].vdw_energy:
+                    mof_dict[aiida_mof.mofname].vdw_energy.update(aiida_mof.vdw_energy)
+                elif aiida_mof.vdw_energy:
+                    mof_dict[aiida_mof.mofname].vdw_energy = aiida_mof.vdw_energy
+            if mof_dict[aiida_mof.mofname].coul_energy or aiida_mof.coul_energy:
+                if mof_dict[aiida_mof.mofname].coul_energy:
+                    mof_dict[aiida_mof.mofname].coul_energy.update(aiida_mof.coul_energy)
+                elif aiida_mof.coul_energy:
+                    mof_dict[aiida_mof.mofname].coul_energy = aiida_mof.coul_energy
             if mof_dict[aiida_mof.mofname].dft_energy or aiida_mof.dft_energy:
-                if not mof_dict[aiida_mof.mofname].dft_energy:
+                #if not mof_dict[aiida_mof.mofname].dft_energy:
+                if aiida_mof.dft_energy:
                     mof_dict[aiida_mof.mofname].dft_energy = aiida_mof.dft_energy
+                    mof_dict[aiida_mof.mofname].dft_dict[aiida_mof.forcefield] = aiida_mof.dft_energy
     return list(mof_dict.values())
 
 
 def write_to_csv(aiida_mofs, filename):
     with open(filename, 'w', newline='') as csvfile:
-        fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)','ff_loading_dev(mol/kg)','enthalpy_of_adsorption(kJ/mol)','enthalpy_of_adsorption_dev(kJ/mol)']
+        fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)','ff_loading_dev(mol/kg)','enthalpy_of_adsorption(kJ/mol)','enthalpy_of_adsorption_dev(kJ/mol)','POAV_A^3']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -434,7 +457,8 @@ def write_to_csv(aiida_mofs, filename):
                              'ff_loading_dev(mol/kg)': list(aiida_mof.ff_loading_dev),
                              'ff_pressure(bar)': list(aiida_mof.ff_pressure),
                              'enthalpy_of_adsorption(kJ/mol)': list(aiida_mof.isotherm_enthalpy),
-                             'enthalpy_of_adsorption_dev(kJ/mol)': list(aiida_mof.isotherm_enthalpy_dev)})
+                             'enthalpy_of_adsorption_dev(kJ/mol)': list(aiida_mof.isotherm_enthalpy_dev),
+                             'POAV_A^3': aiida_mof.pova})
 
 '''
 this is a simple plot function for the data with different elements, 
@@ -442,7 +466,7 @@ the function provides choices of units, log scale, and the range of x and y axis
 '''
 
 def custom_uppercase(s):
-    elements = ['Al', 'Mg', 'Ca','Ga','In','Ba','Sr']  # 定义需要保留第二个字母小写的元素列表
+    elements = ['Al', 'Mg', 'Ca','Ga','In','Ba','Sr',"Py"]  # 定义需要保留第二个字母小写的元素列表
     result = []
     i = 0    
     while i < len(s):

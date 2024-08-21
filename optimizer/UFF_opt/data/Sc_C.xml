@@ -1,0 +1,10 @@
+<ForceField>
+    <LennardJonesForce lj14scale="0.50000">
+        <Atom epsilon="0.07958404242343166" sigma="0.29355000000000003" type="Sc" mask="false"/>
+        <Atom epsilon="0.38113333461043986" sigma="0.34309" type="C" mask="false"/>
+        <Atom epsilon="0.18429870500723977" sigma="0.25711" type="H" mask="false"/>
+        <Atom epsilon="0.25131702121171584" sigma="0.31181000000000003" type="O" mask="false"/>
+        <Atom epsilon="0.65757" sigma="0.305" type="O_co2" mask="true"/>
+        <Atom epsilon="0.22469" sigma="0.28" type="C_co2" mask="true"/>
+    </LennardJonesForce>
+</ForceField>

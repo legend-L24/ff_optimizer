@@ -1,0 +1,113 @@
+            --------------------------------------------------------
+                             AMBER SQM VERSION 19
+ 
+                                     By
+              Ross C. Walker, Michael F. Crowley, Scott Brozell,
+                         Tim Giese, Andreas W. Goetz,
+                        Tai-Sung Lee and David A. Case
+ 
+            --------------------------------------------------------
+ 
+
+--------------------------------------------------------------------------------
+  QM CALCULATION INFO
+--------------------------------------------------------------------------------
+
+| QMMM: Citation for AMBER QMMM Run:
+| QMMM: R.C. Walker, M.F. Crowley and D.A. Case, J. COMP. CHEM. 29:1019, 2008
+
+QMMM: SINGLET STATE CALCULATION
+QMMM: RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 87
+
+| QMMM: *** Selected Hamiltonian *** 
+| QMMM: AM1         
+
+| QMMM: *** Parameter sets in use ***
+| QMMM: Al: M.J.S.DEWAR et al. ORGANOMETALLICS, 9, 508, (1990)
+| QMMM: H : M.J.S.DEWAR et al. JACS, 107, 3902, (1985)
+| QMMM: C : M.J.S.DEWAR et al. JACS, 107, 3902, (1985)
+| QMMM: O : M.J.S.DEWAR et al. JACS, 107, 3902, (1985)
+
+| QMMM: *** SCF convergence criteria ***
+| QMMM: Energy change                :  0.1D-09 kcal/mol
+| QMMM: Error matrix |FP-PF|         :  0.1D+00 au
+| QMMM: Density matrix change        :  0.5D-06
+| QMMM: Maximum number of SCF cycles :     1000
+
+| QMMM: *** Diagonalization Routine Information ***
+| QMMM: Pseudo diagonalizations are allowed.
+| QMMM: Auto diagonalization routine selection is in use.
+| QMMM:
+| QMMM: Timing diagonalization routines:
+| QMMM:                              norbs =      142
+| QMMM:    diag iterations used for timing =       10
+| QMMM:
+| QMMM:              Internal diag routine = 0.081288 seconds
+| QMMM:                 Dspev diag routine = 0.093960 seconds
+| QMMM:                Dspevd diag routine = 0.041141 seconds
+| QMMM:                Dspevx diag routine = 0.198677 seconds
+| QMMM:                 Dsyev diag routine = 0.108462 seconds
+| QMMM:                Dsyevd diag routine = 0.081205 seconds
+| QMMM:                Dsyevr diag routine = 0.045276 seconds
+| QMMM:
+| QMMM:                Pseudo diag routine = 0.036848 seconds
+| QMMM:
+| QMMM: Using dspevd routine (diag_routine=3).
+
+  QMMM: QM Region Cartesian Coordinates (*=link atom) 
+  QMMM: QM_NO.   MM_NO.  ATOM         X         Y         Z
+  QMMM:     1        1      Al       0.0130   -0.0010    5.8400
+  QMMM:     2        2      Al       3.1880    3.7180    4.1600
+  QMMM:     3        3      Al      -1.9860    1.8590    5.0000
+  QMMM:     4        4      Al       2.0130   -1.8580    5.0000
+  QMMM:     5        5      H       -2.2680    0.0540    6.7080
+  QMMM:     6        6      H       -1.2210    5.2540    4.6320
+  QMMM:     7        7      H        2.2900   -0.0510    6.7100
+  QMMM:     8        8      H        0.4270    2.1800    4.6380
+  QMMM:     9        9      H        5.4690    3.6630    3.2910
+  QMMM:    10       10      H        4.4220   -1.5370    5.3680
+  QMMM:    11       11      H        0.9110    3.7680    3.2890
+  QMMM:    12       12      H        2.7740    1.5370    5.3610
+  QMMM:    13       13      H        3.6650    2.4880    0.0010
+  QMMM:    14       14      H       -0.4640    1.2290    9.9980
+  QMMM:    15       15      C        0.5940   -2.2700    7.5010
+  QMMM:    16       16      C        0.4520   -3.0140    8.7890
+  QMMM:    17       17      C       -0.5700    2.2680    7.5030
+  QMMM:    18       18      C       -0.4160    3.0150    8.7890
+  QMMM:    19       19      C        2.6070    5.9870    2.4980
+  QMMM:    20       20      C        2.7500    6.7320    1.2100
+  QMMM:    21       21      C        3.7720    1.4490    2.4960
+  QMMM:    22       22      C        3.6170    0.7020    1.2100
+  QMMM:    23       23      C        3.6190    1.4000    0.0000
+  QMMM:    24       24      C       -0.4180    2.3180    9.9990
+  QMMM:    25       25      O       -1.9040    0.1080    5.8100
+  QMMM:    26       26      O        0.2310   -1.4250    4.6400
+  QMMM:    27       27      O       -0.1460   -1.2470    7.3310
+  QMMM:    28       28      O        0.6780    4.7530    6.7060
+  QMMM:    29       29      O        1.9320   -0.1100    5.8100
+  QMMM:    30       30      O       -0.2050    1.4280    4.6440
+  QMMM:    31       31      O        0.1730    1.2480    7.3310
+  QMMM:    32       32      O       -1.4860    2.6740    6.7140
+  QMMM:    33       33      O        5.1050    3.6090    4.1890
+  QMMM:    34       34      O        2.9700    5.1420    5.3590
+  QMMM:    35       35      O        3.3470    4.9650    2.6680
+  QMMM:    36       36      O        2.5230   -1.0350    3.2940
+  QMMM:    37       37      O        1.2690    3.8270    4.1890
+  QMMM:    38       38      O        3.4060    2.2890    5.3560
+  QMMM:    39       39      O        3.0290    2.4700    2.6690
+  QMMM:    40       40      O        4.6870    1.0430    3.2850
+  QMMM:    41       41      O        4.1320   -2.9740    8.3450
+  QMMM:    42       42      C        3.2340    3.3020    8.3380
+  QMMM:    43       43      O        3.1590    2.1450    8.3310
+
+--------------------------------------------------------------------------------
+  RESULTS
+--------------------------------------------------------------------------------
+
+
+QMMM: ERROR!
+QMMM: Unable to achieve self consistency to the tolerances specified
+QMMM: No convergence in SCF after   1000 steps.
+QMMM: E =  -0.1241E+07 DeltaE =  -0.9523E-03 DeltaP =   0.1010E-02
+QMMM: Smallest DeltaE =  -0.4551E-05 DeltaP =   0.9071E-03 Step =    486
+
