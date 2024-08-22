@@ -445,20 +445,35 @@ def merge_aiida_mofs_list(aiida_mofs1, aiida_mofs2):
     return list(mof_dict.values())
 
 
-def write_to_csv(aiida_mofs, filename):
-    with open(filename, 'w', newline='') as csvfile:
-        fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)','ff_loading_dev(mol/kg)','enthalpy_of_adsorption(kJ/mol)','enthalpy_of_adsorption_dev(kJ/mol)','POAV_A^3']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+def write_to_csv(aiida_mofs, filename, structure_name='cifname'):
+    if structure_name == "cifname":
+        with open(filename, 'w', newline='') as csvfile:
+            fieldnames = ['cifname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)','ff_loading_dev(mol/kg)','enthalpy_of_adsorption(kJ/mol)','enthalpy_of_adsorption_dev(kJ/mol)','POAV_A^3']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-        writer.writeheader()
-        for aiida_mof in aiida_mofs:
-            writer.writerow({'cifname': aiida_mof.cifname, 
-                             'ff_loading(mol/kg)': list(aiida_mof.ff_loading),
-                             'ff_loading_dev(mol/kg)': list(aiida_mof.ff_loading_dev),
-                             'ff_pressure(bar)': list(aiida_mof.ff_pressure),
-                             'enthalpy_of_adsorption(kJ/mol)': list(aiida_mof.isotherm_enthalpy),
-                             'enthalpy_of_adsorption_dev(kJ/mol)': list(aiida_mof.isotherm_enthalpy_dev),
-                             'POAV_A^3': aiida_mof.pova})
+            writer.writeheader()
+            for aiida_mof in aiida_mofs:
+                writer.writerow({'cifname': aiida_mof.cifname, 
+                                'ff_loading(mol/kg)': list(aiida_mof.ff_loading),
+                                'ff_loading_dev(mol/kg)': list(aiida_mof.ff_loading_dev),
+                                'ff_pressure(bar)': list(aiida_mof.ff_pressure),
+                                'enthalpy_of_adsorption(kJ/mol)': list(aiida_mof.isotherm_enthalpy),
+                                'enthalpy_of_adsorption_dev(kJ/mol)': list(aiida_mof.isotherm_enthalpy_dev),
+                                'POAV_A^3': aiida_mof.pova})
+    elif structure_name == "mofname":
+        with open(filename, 'w', newline='') as csvfile:
+            fieldnames = ['mofname',  'ff_pressure(bar)' ,'ff_loading(mol/kg)','ff_loading_dev(mol/kg)','enthalpy_of_adsorption(kJ/mol)','enthalpy_of_adsorption_dev(kJ/mol)','POAV_A^3']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for aiida_mof in aiida_mofs:
+                writer.writerow({'mofname': aiida_mof.mofname, 
+                                'ff_loading(mol/kg)': list(aiida_mof.ff_loading),
+                                'ff_loading_dev(mol/kg)': list(aiida_mof.ff_loading_dev),
+                                'ff_pressure(bar)': list(aiida_mof.ff_pressure),
+                                'enthalpy_of_adsorption(kJ/mol)': list(aiida_mof.isotherm_enthalpy),
+                                'enthalpy_of_adsorption_dev(kJ/mol)': list(aiida_mof.isotherm_enthalpy_dev),
+                                'POAV_A^3': aiida_mof.pova})
 
 '''
 this is a simple plot function for the data with different elements, 
