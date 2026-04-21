@@ -5,4 +5,5 @@ There are two sampling ways to provide configurations for force field optimizati
 1. Binding energy: simulation annealling done by openMM
 2. Isotherm: GCMC done by aiida workflow (https://github.com/mpougin/aiida2.x-lsmo-setup)
 
-## Isotherm sampler 
+The home-made aiida-lsmo version can be found in aiida-lsmo.zip file, which you can put in your aiida-lsmo/ folder. 
+
